@@ -79,12 +79,21 @@ def guardar_venta(pedido):
     f.close()
 
 
+def guardar_encargado(encargado):
+    renglon_ingreso = f"IN, {encargado['ingreso']}, Encargad@ {encargado['nombre']}, Caja: $0\n"
+    renglon_egreso = f"OUT, {encargado['egreso']}, Encargad@ {encargado['nombre']}, Caja: ${encargado['facturado']}\n"
+    f = open("registro.txt", "a")
+    f.write(renglon_ingreso)
+    f.write(renglon_egreso)
+    f.write("#"*50 + "\n")
+    f.close() 
+
 ###############################################################
 precios = {"combo_simple":5, "combo_doble":6, "combo_triple":7, "postre":2}
 salir = True
 
 while salir:
-    datos_encargado = {"nombre":"", "ingreso":"", "egreso":"", "facturato":""}
+    datos_encargado = {"nombre":"", "ingreso":"", "egreso":"", "facturado":""}
     datos_encargado["nombre"] = bienvenido_encargado()
     datos_encargado["ingreso"] = time.asctime()
     caja = 0
@@ -92,6 +101,7 @@ while salir:
     while True:
         menu(datos_encargado["nombre"])
         opcion = pedir_int("Elija una opcion >>> ")
+        print("\n")
         if opcion == 1:
             pedido = {"nombre":"", "fecha":"", "combo_simple":0, "combo_doble":0, "combo_triple":0, "postre":0, "total":0}
             pedido["nombre"] = pedir_str("Ingrese nombre del cliente: ")
@@ -102,29 +112,39 @@ while salir:
             pedido["postre"] = pedir_int("Ingrese cantidad de Postres: ")
             total_pedido = calcular_total(pedido, precios)
             pedido["total"] = total_pedido
+            print("\n")
             print(f"Total: ${total_pedido}")
             abona_con = pedir_float("Abona con $")
             while True:
                 if total_pedido > abona_con:
-                    print("No es suficiente. Ingrese un monto mayor...")
+                    print("No es suficiente. Ingrese un monto mayor...\n")
                     abona_con = pedir_float("Abona con $")
                 else:
-                    print(f"Vuelto: ${abona_con - total_pedido}")
+                    print(f"Vuelto: ${abona_con - total_pedido}\n")
                     break
             estado = confirmar_pedido()
             if estado:
                 caja += total_pedido
                 guardar_venta(pedido)
-                print("Venta guardada con exito") 
+                print("Venta guardada con exito\n") 
             else:
-                print("Pedido cancelado")
+                print("Pedido cancelado\n")
                 print("\n")
 
         elif opcion == 2:
-            pass
+            datos_encargado["egreso"] = time.asctime()
+            datos_encargado["facturado"] = caja
+            guardar_encargado(datos_encargado)
+            break
 
         elif opcion == 3:
-            pass
+            datos_encargado["egreso"] = time.asctime()
+            datos_encargado["facturado"] = caja
+            guardar_encargado(datos_encargado)
+            print("Gracias por utilizar nuestro programa...")
+            salir = False
+            break
 
         else:
             input("Error. Elija una opcion valida...")
+            print("\n"*3)
