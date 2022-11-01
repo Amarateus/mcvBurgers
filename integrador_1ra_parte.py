@@ -1,4 +1,5 @@
 import time
+import os
 
 def pedir_str(mensaje):
     dato = input(mensaje)
@@ -89,20 +90,30 @@ def guardar_encargado(encargado):
     f.close() 
 
 ###############################################################
+def limpiar_consola():
+    if os.name == "nt":
+        borrar = os.system("cls")
+    else:
+        borrar == os.system("clear")
+    return borrar
+
 precios = {"combo_simple":5, "combo_doble":6, "combo_triple":7, "postre":2}
 salir = True
 
 while salir:
+    limpiar_consola()
     datos_encargado = {"nombre":"", "ingreso":"", "egreso":"", "facturado":""}
     datos_encargado["nombre"] = bienvenido_encargado()
     datos_encargado["ingreso"] = time.asctime()
     caja = 0
     print("\n"*2)
     while True:
+        limpiar_consola()
         menu(datos_encargado["nombre"])
         opcion = pedir_int("Elija una opcion >>> ")
         print("\n")
         if opcion == 1:
+            limpiar_consola()
             pedido = {"nombre":"", "fecha":"", "combo_simple":0, "combo_doble":0, "combo_triple":0, "postre":0, "total":0}
             pedido["nombre"] = pedir_str("Ingrese nombre del cliente: ")
             pedido["fecha"] = time.asctime()
@@ -126,10 +137,9 @@ while salir:
             if estado:
                 caja += total_pedido
                 guardar_venta(pedido)
-                print("Venta guardada con exito\n") 
+                input("Venta guardada con exito...")
             else:
-                print("Pedido cancelado\n")
-                print("\n")
+                input("Pedido cancelado")
 
         elif opcion == 2:
             datos_encargado["egreso"] = time.asctime()
@@ -141,8 +151,9 @@ while salir:
             datos_encargado["egreso"] = time.asctime()
             datos_encargado["facturado"] = caja
             guardar_encargado(datos_encargado)
-            print("Gracias por utilizar nuestro programa...")
+            input("Gracias por utilizar nuestro programa...")
             salir = False
+            limpiar_consola()
             break
 
         else:
